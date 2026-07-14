@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTS NEWS 2025 - World Baseball Classic Live</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="app-header">
+        <div class="logo">PTS NEWS</div>
+    </header>
+
+    <main class="container">
+        <!-- Live Feed Container -->
+        <div id="live-feed" class="live-feed">
+            <!-- Content will be injected here by script.js -->
+        </div>
+
+        <!-- Player Card Modal / Tooltip (Hidden by default) -->
+        <div id="player-card-modal" class="player-modal hidden">
+            <div class="player-card">
+                <button class="close-btn">&times;</button>
+                <div class="card-header">
+                    <img id="modal-photo" src="" alt="Player Photo">
+                    <div class="card-title">
+                        <h2 id="modal-name"></h2>
+                        <span id="modal-team"></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="meta-row">
+                        <span id="modal-position"></span> | 
+                        <span id="modal-dob"></span>
+                    </p>
+                    <p id="modal-bio" class="bio-text"></p>
+                    <a id="modal-wiki-link" href="#" target="_blank" class="wiki-btn">查看棒球維基完整資料</a>
+                </div>
+            </div>
+            <div class="modal-overlay"></div>
+        </div>
+    </main>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
