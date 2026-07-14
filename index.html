@@ -1,50 +1,281 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PTS NEWS 2025 - World Baseball Classic Live</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>國際 | 公視新聞 — 側欄定位原型</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary-600:#007cff;
+    --primary-400:#3998ff;
+    --neutral-900:#171717;
+    --neutral-500:#737373;
+    --divider:#e5e5e5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#f5f5f5;}
+  body{font-family:"Noto Sans TC","PingFang TC",sans-serif;}
+  a{color:inherit;text-decoration:none;}
+
+  .page-stage{
+    position:relative;
+    width:1470px;
+    margin:0 auto;
+    background:#f5f5f5;
+  }
+  .page-stage > img.base{
+    display:block;
+    width:100%;
+    height:auto;
+    pointer-events:none;
+    user-select:none;
+  }
+
+  /* ---------- 上方標題區塊：會隨頁面捲走，不 sticky ---------- */
+  .head-block{
+    position:absolute;
+    left:124px;
+    top:112px;
+    width:287px;
+  }
+  .crumb{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .crumb-home{font-size:16px;color:var(--neutral-500);font-weight:400;}
+  .crumb-sep{font-size:16px;color:var(--neutral-500);}
+  .crumb-title{font-size:26px;font-weight:700;color:var(--neutral-900);margin:0;line-height:1.2;}
+  .hashtag-row{
+    display:flex;flex-wrap:wrap;
+    gap:4px 10px;
+    margin-bottom:14px;
+  }
+  .hashtag-row span{
+    font-size:15px;font-weight:700;color:var(--primary-600);white-space:nowrap;
+  }
+  .tag-pill-row{
+    display:flex;flex-wrap:wrap;gap:8px;
+    margin-bottom:20px;
+  }
+  .tag-pill{
+    border:1px solid var(--primary-600);
+    color:var(--primary-600);
+    border-radius:999px;
+    padding:2px 8px;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .head-divider{height:1px;background:var(--divider);width:100%;}
+
+  /* ---------- Sticky 側欄導覽（可點擊文字） ---------- */
+  .sticky-wrap{
+    position:absolute;
+    left:124px;
+    top:337px;
+    width:287px;
+    height:3820px; /* 4157 - 337，讓 sticky 在最新內容結束、footer 開始前停止 */
+  }
+  .sticky-box{
+    position:sticky;
+    top:24px;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+  .nav-item{
+    font-weight:700;
+    font-size:16px;
+    color:var(--neutral-900);
+    cursor:pointer;
+    width:fit-content;
+    transition:color .2s ease;
+  }
+  .nav-item:hover{color:var(--primary-600);}
+  .nav-item.active{color:var(--primary-600);}
+
+  .nav-group-label{
+    font-weight:700;
+    font-size:16px;
+    color:var(--neutral-900);
+    margin-bottom:12px;
+    cursor:pointer;
+    width:fit-content;
+    transition:color .2s ease;
+  }
+  .nav-group-label.active{color:var(--primary-600);}
+  .topic-list{display:flex;flex-direction:column;}
+  .topic-item{cursor:pointer;padding-top:8px;}
+  .topic-item:first-child{padding-top:0;border-top:none;}
+  .topic-item + .topic-item{border-top:1px solid var(--divider);}
+  .topic-item .topic-title{
+    font-weight:700;
+    font-size:14px;
+    line-height:1.7;
+    color:var(--neutral-500);
+    width:fit-content;
+    transition:color .2s ease;
+  }
+  .topic-item:hover .topic-title{color:var(--primary-400);}
+  .topic-item.active .topic-title{color:var(--primary-400);}
+  .topic-summary{
+    font-weight:400;
+    font-size:14px;
+    line-height:1.7;
+    color:var(--neutral-500);
+    display:grid;
+    grid-template-rows:0fr;
+    opacity:0;
+    cursor:auto;
+    transition:grid-template-rows .28s ease, opacity .22s ease, margin-top .28s ease;
+    margin-top:0;
+  }
+  .topic-summary > div{overflow:hidden;}
+  .topic-item.active .topic-summary{
+    grid-template-rows:1fr;
+    opacity:1;
+    margin-top:6px;
+  }
+
+  /* 用來量測捲動位置的隱形錨點，對應底圖上各區塊的實際像素座標 */
+  .zone-marker{
+    position:absolute;
+    left:0;
+    width:1px;
+    pointer-events:none;
+  }
+
+  .proto-banner{
+    position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+    background:rgba(23,23,23,0.9);color:#fff;font-size:13px;
+    padding:8px 16px;border-radius:999px;z-index:999;
+    white-space:nowrap;
+  }
+  .proto-banner b{color:var(--primary-400);}
+</style>
 </head>
 <body>
-    <header class="app-header">
-        <div class="logo">PTS NEWS</div>
-    </header>
 
-    <main class="container">
-        <!-- Live Feed Container -->
-        <div id="live-feed" class="live-feed">
-            <!-- Content will be injected here by script.js -->
+<div class="page-stage" id="stage">
+  <img class="base" src="assets/claen.png" alt="頁面底圖">
+
+  <!-- 隱形錨點：定義各區塊在底圖上的像素範圍，供 scroll-spy 判斷用 -->
+  <div class="zone-marker" id="zone-focus"    style="top:104px;  height:786px;"></div>
+  <div class="zone-marker" id="zone-worldcup" style="top:890px;  height:455px;"></div>
+  <div class="zone-marker" id="zone-ukraine"  style="top:1345px; height:455px;"></div>
+  <div class="zone-marker" id="zone-iran"     style="top:1800px; height:500px;"></div>
+  <div class="zone-marker" id="zone-latest"   style="top:2300px; height:1857px;"></div>
+
+  <!-- 標題區塊（首頁/國際、hashtag、標籤）：會隨頁面捲走 -->
+  <div class="head-block">
+    <div class="crumb">
+      <span class="crumb-home">首頁</span><span class="crumb-sep">/</span>
+      <h1 class="crumb-title">國際</h1>
+    </div>
+    <div class="hashtag-row">
+      <span># 2026世足賽</span><span># 俄烏停火僵局</span><span># 美伊戰火</span>
+    </div>
+    <div class="tag-pill-row">
+      <span class="tag-pill">荷姆茲海峽</span><span class="tag-pill">伊朗</span>
+      <span class="tag-pill">登陸</span><span class="tag-pill">泰國總理</span>
+      <span class="tag-pill">英格蘭</span><span class="tag-pill">澤倫斯基</span>
+    </div>
+    <div class="head-divider"></div>
+  </div>
+
+  <!-- Sticky 側欄導覽：可點擊文字 + scroll-spy 高亮／展開 -->
+  <div class="sticky-wrap">
+    <nav class="sticky-box" id="sideNav">
+      <div class="nav-item" data-target="zone-focus">焦點新聞</div>
+
+      <div>
+        <div class="nav-group-label" id="relatedLabel">相關議題</div>
+        <div class="topic-list">
+          <div class="topic-item" data-target="zone-worldcup">
+            <div class="topic-title">2026世足賽</div>
+            <div class="topic-summary"><div>2026FIFA世界盃將於台灣時間6月12日凌晨開踢，本屆首次由美國、加拿大、墨西哥聯合主辦，參賽球隊更首度擴編為48支球隊，規模為歷屆最大。最終由法國、西班牙、英格蘭、阿根廷等球隊晉級4強。</div></div>
+          </div>
+          <div class="topic-item" data-target="zone-ukraine">
+            <div class="topic-title">俄烏停火僵局</div>
+            <div class="topic-summary"><div>俄烏雙方停火談判陷入僵局，儘管歐美持續居中斡旋，但雙方在領土劃分與安全保證等關鍵議題上仍存在重大分歧，前線衝突未見緩和，國際社會持續關注停火協議能否重啟。</div></div>
+          </div>
+          <div class="topic-item" data-target="zone-iran">
+            <div class="topic-title">美伊戰火</div>
+            <div class="topic-summary"><div>美國與以色列於2月28日聯手對伊朗發動飛彈攻擊，並擊斃其最高宗教領袖哈米尼等多名領導階層。伊朗於3月8日任命哈米尼次子穆吉塔巴（Mojtaba Khamenei），繼任最高領袖。</div></div>
+          </div>
         </div>
+      </div>
 
-        <!-- Player Card Modal / Tooltip (Hidden by default) -->
-        <div id="player-card-modal" class="player-modal hidden">
-            <div class="player-card">
-                <button class="close-btn">&times;</button>
-                <div class="card-header">
-                    <img id="modal-photo" src="" alt="Player Photo">
-                    <div class="card-title">
-                        <h2 id="modal-name"></h2>
-                        <span id="modal-team"></span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="meta-row">
-                        <span id="modal-position"></span> | 
-                        <span id="modal-dob"></span>
-                    </p>
-                    <p id="modal-bio" class="bio-text"></p>
-                    <a id="modal-wiki-link" href="#" target="_blank" class="wiki-btn">查看棒球維基完整資料</a>
-                </div>
-            </div>
-            <div class="modal-overlay"></div>
-        </div>
-    </main>
+      <div class="nav-item" data-target="zone-latest">最新內容</div>
+    </nav>
+  </div>
+</div>
 
-    <script type="module" src="script.js"></script>
+<div class="proto-banner">📍 <b>sticky</b> 側欄定位原型：點文字可跳轉，往下捲動觀察自動高亮／展開</div>
+
+<script>
+(function(){
+  var navMap = {};
+  document.querySelectorAll('.nav-item, .topic-item').forEach(function(el){
+    navMap[el.dataset.target] = el;
+    el.addEventListener('click', function(){
+      var target = document.getElementById(el.dataset.target);
+      if(target){ target.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+  });
+
+  var zones = Object.keys(navMap).map(function(id){
+    return { id: id, el: document.getElementById(id) };
+  }).filter(function(z){ return z.el; });
+
+  var topicZoneIds = ['zone-worldcup', 'zone-ukraine', 'zone-iran'];
+  var relatedLabel = document.getElementById('relatedLabel');
+  if(relatedLabel){
+    relatedLabel.addEventListener('click', function(){
+      var target = document.getElementById('zone-worldcup');
+      if(target){ target.scrollIntoView({behavior:'smooth', block:'start'}); }
+    });
+  }
+
+  var currentActive = null;
+  function setActive(id){
+    if(id === currentActive) return;
+    currentActive = id;
+    Object.keys(navMap).forEach(function(key){
+      navMap[key].classList.toggle('active', key === id);
+    });
+    if(relatedLabel){
+      relatedLabel.classList.toggle('active', topicZoneIds.indexOf(id) !== -1);
+    }
+  }
+
+  var ticking = false;
+  function computeActive(){
+    var vh = window.innerHeight;
+    var best = null, bestRatio = 0;
+    zones.forEach(function(z){
+      var rect = z.el.getBoundingClientRect();
+      var visibleTop = Math.max(rect.top, 0);
+      var visibleBottom = Math.min(rect.bottom, vh);
+      var visibleHeight = Math.max(0, visibleBottom - visibleTop);
+      var ratio = visibleHeight / vh; // 此區塊佔目前視窗的可視比例
+      if(ratio > bestRatio){ bestRatio = ratio; best = z; }
+    });
+    if(best){ setActive(best.id); }
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function(){
+    if(!ticking){ window.requestAnimationFrame(computeActive); ticking = true; }
+  }, {passive:true});
+  window.addEventListener('resize', computeActive);
+  computeActive();
+})();
+</script>
+
 </body>
 </html>
